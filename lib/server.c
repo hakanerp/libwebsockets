@@ -1757,6 +1757,7 @@ lws_adopt_descriptor_vhost(struct lws_vhost *vh, lws_adoption_type type,
 {
 	struct lws_context *context = vh->context;
 	struct lws *new_wsi = lws_create_new_server_wsi(vh);
+	struct lws_context_per_thread *pt;
 	int n, ssl = 0;
 
 	if (!new_wsi) {
@@ -1764,6 +1765,8 @@ lws_adopt_descriptor_vhost(struct lws_vhost *vh, lws_adoption_type type,
 			compatible_close(fd.sockfd);
 		return NULL;
 	}
+	pt = &context->pt[(int)new_wsi->tsi];
+	lws_stats_atomic_bump(context, pt, LWSSTATS_C_CONNECTIONS, 1);
 
 	if (parent) {
 		new_wsi->parent = parent;
