@@ -251,6 +251,11 @@ LWS_VISIBLE int lws_write(struct lws *wsi, unsigned char *buf, size_t len,
 	size_t orig_len = len;
 
 	lws_stats_atomic_bump(wsi->context, pt, LWSSTATS_C_API_LWS_WRITE, 1);
+	if ((int)len < 0) {
+		lwsl_err("%s: suspicious len int %d, ulong %lu\n", __func__,
+				(int)len, (unsigned long)len);
+		return -1;
+	}
 	lws_stats_atomic_bump(wsi->context, pt, LWSSTATS_B_WRITE, len);
 
 #ifdef LWS_WITH_ACCESS_LOG
